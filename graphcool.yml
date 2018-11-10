@@ -1,0 +1,347 @@
+types:
+  - ./types/post.graphql
+  - ./types/user.graphql
+  - ./types/file.graphql
+  - ./types/favorite.graphql
+  - ./types/area.graphql
+  - ./types/country.graphql
+  - ./types/advantage.graphql
+  - ./types/contact.graphql
+  - ./types/profile.graphql
+  - ./types/post_category.graphql
+  - ./types/tag.graphql
+  - ./types/booking.graphql
+  - ./types/hotel.graphql
+  - ./types/review.graphql
+  - ./types/room.graphql
+  - ./enums/role.graphql
+  - ./enums/room_type.graphql
+
+functions:
+
+  # from auth0 user
+  authenticate:
+    handler:
+      code:
+        src: ./functions/resolvers/auth0/auth0Authentication.js
+        environment:
+          AUTH0_DOMAIN: ${env:AUTH0_DOMAIN}
+          AUTH0_API_IDENTIFIER: ${env:AUTH0_API_IDENTIFIER}
+    type: resolver
+    schema: ./functions/resolvers/auth0/auth0Authentication.graphql
+
+  isAdmin:
+    handler:
+      code:
+        src: ./functions/resolvers/user/isAdmin.js
+        environment:
+          GRAPHCOOL_SIMPLE_ENDPOINT: ${env:GRAPHCOOL_SIMPLE_ENDPOINT}
+          GRAPHCOOL_API_KEY: ${env:GRAPHCOOL_API_KEY}
+    type: resolver
+    schema: ./functions/resolvers/user/isAdmin.graphql
+
+  adminize:
+    handler:
+      code:
+        src: ./functions/resolvers/user/adminize.js
+        environment:
+          GRAPHCOOL_SIMPLE_ENDPOINT: ${env:GRAPHCOOL_SIMPLE_ENDPOINT}
+          GRAPHCOOL_API_KEY: ${env:GRAPHCOOL_API_KEY}
+    type: resolver
+    schema: ./functions/resolvers/user/adminize.graphql
+
+  sayHelloPost:
+    type: operationAfter
+    operation: Post.create
+    handler:
+      code: functions/hooks/sayHelloPost.js
+
+  syncAlgolia:
+    type: subscription
+    query: functions/subscriptions/algolia/userSync.graphql
+    handler:
+      code:
+        src: ./functions/subscriptions/algolia/userSync.js
+        environment:
+          ALGOLIA_APP_ID: ${env:ALGOLIA_APP_ID}
+          ALGOLIA_API_KEY: ${env:ALGOLIA_API_KEY}
+
+  validateProfile:
+    type: operationBefore
+    operation: Profile.create
+    handler:
+      code: functions/validators/validateProfile.js
+
+permissions:
+
+  # Advantage
+  - operation: Advantage.read
+    authenticated: true
+  - operation: Advantage.create
+    authenticated: true
+  - operation: Advantage.update
+    authenticated: true
+  - operation: Advantage.delete
+    authenticated: true
+
+  # Area
+  - operation: Area.read
+    authenticated: true
+  - operation: Area.create
+    authenticated: true
+  - operation: Area.update
+    authenticated: true
+  - operation: Area.delete
+    authenticated: true
+
+  # Booking
+  - operation: Booking.read
+    authenticated: true
+  - operation: Booking.create
+    authenticated: true
+  - operation: Booking.update
+    authenticated: true
+  - operation: Booking.delete
+    authenticated: true
+
+  # Contact
+  - operation: Contact.read
+    authenticated: true
+  - operation: Contact.create
+    authenticated: true
+  - operation: Contact.update
+    authenticated: true
+  - operation: Contact.delete
+    authenticated: true
+
+  # Country
+  - operation: Country.read
+    authenticated: true
+    query: ./permissions/onlyAdmin.graphql:create
+  - operation: Country.create
+    authenticated: true
+  - operation: Country.update
+    authenticated: true
+  - operation: Country.delete
+    authenticated: true
+
+  # Favorite
+  - operation: Favorite.read
+    authenticated: true
+  - operation: Favorite.create
+    authenticated: true
+  - operation: Favorite.update
+    authenticated: true
+  - operation: Favorite.delete
+    authenticated: true
+
+  # File
+  - operation: File.read
+    authenticated: true
+  - operation: File.create
+    authenticated: true
+  - operation: File.update
+    authenticated: true
+  - operation: File.delete
+    authenticated: true
+
+  # Hotel
+  - operation: Hotel.read
+    authenticated: true
+  - operation: Hotel.create
+    authenticated: true
+  - operation: Hotel.update
+    authenticated: true
+  - operation: Hotel.delete
+    authenticated: true
+
+  # PostCategory
+  - operation: PostCategory.read
+    authenticated: true
+  - operation: PostCategory.create
+    authenticated: true
+  - operation: PostCategory.update
+    authenticated: true
+  - operation: PostCategory.delete
+    authenticated: true
+
+  # Post
+  - operation: Post.read
+    authenticated: true
+  - operation: Post.create
+    authenticated: true
+  - operation: Post.update
+    authenticated: true
+  - operation: Post.delete
+    authenticated: true
+
+  # Profile
+  - operation: Profile.read
+    authenticated: true
+  - operation: Profile.create
+    authenticated: true
+  - operation: Profile.update
+    authenticated: true
+  - operation: Profile.delete
+    authenticated: true
+
+  # Review
+  - operation: Review.read
+    authenticated: true
+  - operation: Review.create
+    authenticated: true
+  - operation: Review.update
+    authenticated: true
+  - operation: Review.delete
+    authenticated: true
+
+  # Room
+  - operation: Room.read
+    authenticated: true
+  - operation: Room.create
+    authenticated: true
+  - operation: Room.update
+    authenticated: true
+  - operation: Room.delete
+    authenticated: true
+
+  # Tag
+  - operation: Tag.read
+    authenticated: true
+  - operation: Tag.create
+    authenticated: true
+  - operation: Tag.update
+    authenticated: true
+  - operation: Tag.delete
+    authenticated: true
+
+  # User
+  - operation: User.read
+    authenticated: true
+  - operation: User.create
+  - operation: User.update
+    authenticated: true
+  - operation: User.delete
+    authenticated: true
+
+  # Relation
+
+  # RoomPhotos
+  - operation: RoomPhotos.connect
+    authenticated: true
+  - operation: RoomPhotos.disconnect
+    authenticated: true
+
+  # CountryAreas
+  - operation: CountryAreas.connect
+    authenticated: true
+  - operation: CountryAreas.disconnect
+    authenticated: true
+
+  # CountryHotels
+  - operation: CountryHotels.connect
+    authenticated: true
+  - operation: CountryHotels.disconnect
+    authenticated: true
+
+  # UserProfile
+  - operation: UserProfile.connect
+    authenticated: true
+  - operation: UserProfile.disconnect
+    authenticated: true
+
+  # PostTags
+  - operation: PostTags.connect
+    authenticated: true
+  - operation: PostTags.disconnect
+    authenticated: true
+
+  # AreaHotels
+  - operation: AreaHotels.connect
+    authenticated: true
+  - operation: AreaHotels.disconnect
+    authenticated: true
+
+  # HotelsAdvantages
+  - operation: HotelsAdvantages.connect
+    authenticated: true
+  - operation: HotelsAdvantages.disconnect
+    authenticated: true
+
+  # UserReviews
+  - operation: UserReviews.connect
+    authenticated: true
+  - operation: UserReviews.disconnect
+    authenticated: true
+
+  # UserFavorites
+  - operation: UserFavorites.connect
+    authenticated: true
+  - operation: UserFavorites.disconnect
+    authenticated: true
+
+  # HotelRooms
+  - operation: HotelRooms.connect
+    authenticated: true
+  - operation: HotelRooms.disconnect
+    authenticated: true
+
+  # FavoriteHotels
+  - operation: FavoriteHotels.connect
+    authenticated: true
+  - operation: FavoriteHotels.disconnect
+    authenticated: true
+
+  # UserBookings
+  - operation: UserBookings.connect
+    authenticated: true
+  - operation: UserBookings.disconnect
+    authenticated: true
+
+  # HotelPhotos
+  - operation: HotelPhotos.connect
+    authenticated: true
+  - operation: HotelPhotos.disconnect
+    authenticated: true
+
+  # AdvantageIcon
+  - operation: AdvantageIcon.connect
+    authenticated: true
+  - operation: AdvantageIcon.disconnect
+    authenticated: true
+
+  # Avatar
+  - operation: Avatar.connect
+    authenticated: true
+  - operation: Avatar.disconnect
+    authenticated: true
+
+  # HotelReviews
+  - operation: HotelReviews.connect
+    authenticated: true
+  - operation: HotelReviews.disconnect
+    authenticated: true
+
+  # HotelBookings
+  - operation: HotelBookings.connect
+    authenticated: true
+  - operation: HotelBookings.disconnect
+    authenticated: true
+
+  # UserPosts
+  - operation: UserPosts.connect
+    authenticated: true
+  - operation: UserPosts.disconnect
+    authenticated: true
+
+  # PostHero
+  - operation: PostHero.connect
+    authenticated: true
+  - operation: PostHero.disconnect
+    authenticated: true
+
+  # PostAndPostCategory
+  - operation: PostAndPostCategory.connect
+    authenticated: true
+  - operation: PostAndPostCategory.disconnect
+    authenticated: true
