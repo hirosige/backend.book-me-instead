@@ -1,4 +1,4 @@
-# Suneikii Property Backend
+# Book Me Instead Backend
 
 `auth0` | `graphcool` | `create-react-app` | `graphql` |
 
